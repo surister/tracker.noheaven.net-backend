@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'apps.core',
+    'apps.auth',
     'apps.manganelo_api',
     'django.contrib.admin',
     'django.contrib.auth',
