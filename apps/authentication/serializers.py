@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate, get_user_model, login
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 
@@ -18,11 +18,13 @@ class LoginSerializer(serializers.Serializer):
         username = data.get('username')
         password = data.get('password')
 
-        user = authenticate(request=self.context.get('request'),
+        request = self.context.get('request')
+        user = authenticate(request=request,
                             username=username, password=password)
 
         if not user:
             msg = _('Unable to log in with provided credentials.')
             raise serializers.ValidationError(msg, code='authorization')
 
+        login(request=request, user=user)
         return data

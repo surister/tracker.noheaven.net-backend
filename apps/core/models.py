@@ -10,20 +10,8 @@ def create_proxy_tracker_user(sender, instance, created, **kwargs):
         Tracker.objects.create(user=instance)
 
 
-class Tracker(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'<{self.user}>'
-
-    @property
-    def animes(self):
-        return Anime.objects.filter(tracker=self)
-
-
 class Anime(models.Model):
     title = models.CharField(max_length=512)
-    tracker = models.ManyToManyField(Tracker)
 
     def __str__(self):
         return self.title
@@ -33,12 +21,46 @@ class Anime(models.Model):
         return Source.objects.filter(anime=self)
 
 
-class Source(models.Model):
+class Tracker(models.Model):
+    """
+    Proxy model that connects:
+
+    User 1:1 Tracker 1:m AnimeProfiles
+
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'<{self.user}>'
+
+    @property
+    def animes(self):
+        return AnimeProfile.objects.filter(tracker=self)
+
+
+class AnimeProfile(models.Model):
+    tracker = models.ForeignKey(Tracker, on_delete=models.PROTECT)
     anime = models.ForeignKey(Anime, on_delete=models.PROTECT)
+    last_time_read = models.DateTimeField(null=True, blank=True)
+    current_chapter = models.CharField(default='1', max_length=120)
+
+    def __str__(self):
+        return f'{str(self.tracker)} - {str(self.anime)}'
+
+
+class Source(models.Model):
+    class SourceChoices(models.TextChoices):
+        custom = 1, 'Manganelo'
+        manganelo = 2, 'Manganelo'
+
+    anime = models.ForeignKey(Anime, on_delete=models.CASCADE)
+    chapter_count = models.FloatField()
     title = models.CharField(max_length=512)
+    type = models.CharField(choices=SourceChoices.choices, max_length=30)
+    image = models.URLField()
     authors = models.CharField(max_length=256)
     views = models.IntegerField()
-    last_updated = models.DateTimeField()
+    last_updated = models.DateField()
 
 
 signals.post_save.connect(create_proxy_tracker_user, sender=User, weak=False,

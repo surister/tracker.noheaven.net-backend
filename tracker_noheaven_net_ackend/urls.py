@@ -20,5 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('manganelo/', include('apps.manganelo_api.urls')),
     path('core/', include('apps.core.urls')),
-    path('auth/', include('apps.auth.urls')),
+    path('auth/', include('apps.authentication.urls')),
 ]

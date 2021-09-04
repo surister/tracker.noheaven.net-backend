@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'apps.core',
-    'apps.auth',
+    'apps.authentication',
     'apps.manganelo_api',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -54,7 +54,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'tracker_noheaven_net_ackend.urls'
-CORS_ALLOW_ALL_ORIGINS = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -124,3 +124,19 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:8081',
+    'http://127.0.0.1:8081',
+    'http://frontend.local:8081'
+)
+
+SESSION_COOKIE_HTTPONLY = False
